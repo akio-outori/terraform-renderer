@@ -9,6 +9,7 @@ variables:
     east-1c: "subnet-a71fb2ff"
     east-1d: "subnet-9ab7dfa7"
   ami: "ami-1c221e76"
+  user: "centos"
   keypair: "jeffhallyburton-east-1"
 
 instance:

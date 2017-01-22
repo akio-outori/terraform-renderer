@@ -19,7 +19,7 @@ variable "ami" {
 }
 
 variable "aws_keypair" {
-  default = "{{ key }}"
+  default = "{{ keypair }}"
 }
 
 variable "aws_user" {

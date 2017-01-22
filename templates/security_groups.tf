@@ -1,6 +1,6 @@
-resource "aws_security_group" "jenkins-server" {
-  name_prefix   = "jenkins-master"
-  description   = "ports required for Jenkins Master"
+resource "aws_security_group" "{{ name }}" {
+  name_prefix   = "{{ prefix }}"
+  description   = "{{ description }}"
 
   ingress {
     from_port   = "22"
