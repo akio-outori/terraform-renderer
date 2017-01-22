@@ -1,0 +1,22 @@
+---
+
+variables:
+  region: "us-east-1"
+  vpc: "vpc-628dae06"
+  subnet: 
+    east-1a: "subnet-3525fe1f" 
+    east-1b: "subnet-3832b84e"
+    east-1c: "subnet-a71fb2ff"
+    east-1d: "subnet-9ab7dfa7"
+  ami: "ami-1c221e76"
+  keypair: "jeffhallyburton-east-1"
+
+instance:
+  name: "yaml-test"
+  type: "t2.micro"
+  
+security_group:
+  prefix: "yaml-test"
+  description: "test sg for terraform auto-generation"
+  ports:
+    - "22"
