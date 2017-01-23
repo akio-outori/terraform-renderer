@@ -21,3 +21,5 @@ security_group:
   description: "test sg for terraform auto-generation"
   ports:
     - "22"
+    - "80"
+    - "443"

@@ -3,6 +3,7 @@
 import os
 import sys
 import yaml
+import shutil
 import random
 from jinja2 import Template
 
@@ -72,9 +73,14 @@ class generator():
     with open(dest_file, "w+") as f:
       f.write(content.render(name=self.instance_name, prefix=self.prefix, description=self.description, ports=self.ports))
 
+  def writeMetaData(self):
+    for source in [ "templates/.gitignore", "templates/aws_config.tf" ]:
+      shutil.copy(source, self.parent_dir)    
+
 template = sys.argv[1]
 terraform = generator(template)
 
+terraform.writeMetaData()
 terraform.writeVars('templates/variables.tf')
 terraform.writeInstance('templates/instance.tf')
-# terraform.writeSG('templates/security_groups.tf')
+terraform.writeSG('templates/security_groups.tf')
