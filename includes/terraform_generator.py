@@ -1,13 +1,12 @@
 #!/usr/bin/python
 
 import os
-import sys
 import yaml
 import shutil
 import random
 from jinja2 import Template
 
-class generator():
+class terraform_generator():
 
   def __init__(self, template):
     self.data       = self.__read_yaml(template)
@@ -17,7 +16,7 @@ class generator():
     self.__constructSG()
 
   def __read_yaml(self, template):
-    with open(sys.argv[1]) as f:
+    with open(template) as f:
       data = yaml.safe_load(f)  
     return data
 
@@ -77,10 +76,3 @@ class generator():
     for source in [ "templates/.gitignore", "templates/aws_config.tf" ]:
       shutil.copy(source, self.parent_dir)    
 
-template = sys.argv[1]
-terraform = generator(template)
-
-terraform.writeMetaData()
-terraform.writeVars('templates/variables.tf')
-terraform.writeInstance('templates/instance.tf')
-terraform.writeSG('templates/security_groups.tf')

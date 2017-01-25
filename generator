@@ -1,0 +1,62 @@
+#!/usr/bin/python
+
+import sys
+from includes.switch import switch
+from includes.terraform_generator import terraform_generator
+
+def showOpts():
+  print("Option not understood:")
+  print("  createAll")
+  print("  createInstance")
+  print("  createVars")
+  print("  createSG")
+  print("\nusage: generator <option> <file>.yml")
+  sys.exit(1)
+
+def createAll():
+  terraform.writeMetaData()
+  terraform.writeVars('templates/variables.tf')
+  terraform.writeInstance('templates/instance.tf')
+  terraform.writeSG('templates/security_groups.tf')  
+
+def createVars():
+  terraform.writeMetaData()
+  terraform.writeVars('templates/variables.tf')
+  
+def createInstance():
+  terraform.writeMetaData()
+  terraform.writeInstance('templates/instance.tf')
+
+def createSG():
+  terraform.writeMetaData()
+  terraform.writeSG('templates/security_groups.tf')
+
+try: 
+  sys.argv[1]
+  sys.argv[2]
+except:
+  showOpts()
+
+option   = sys.argv[1]
+template = sys.argv[2]
+
+terraform = terraform_generator(template)
+
+for case in switch(option):
+  if case("createAll"):
+    createAll()
+    break
+  if case("createVars"):
+    createVars()
+    break
+  if case("createInstance"):
+    createInstance()
+    break
+  if case("createSG"):
+    createSG()
+    break
+  if case():
+    showOpts()
+    break
+
+
