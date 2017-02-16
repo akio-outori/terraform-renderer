@@ -8,9 +8,9 @@ from jinja2 import Template
 
 class terraform_generator():
 
-  def __init__(self, template):
+  def __init__(self, template, system=''):
     self.data       = self.__read_yaml(template)
-    self.parent_dir = self.__createDir(template)
+    self.parent_dir = self.__createDir(template, system)
     self.__constructVars()
     self.__constructInstance()
     self.__constructSG()
@@ -37,14 +37,14 @@ class terraform_generator():
     self.description = self.data['security_group']['description']
     self.ports       = self.data['security_group']['ports']
 
-  def __createDir(self, template):
+  def __createDir(self, template, system):
     if ".yml" in template:
       extension = template.find('.yml')
       try:
-        os.makedirs(template[0:extension])
-        return template[0:extension]
+        os.makedirs(template[0:extension] + '/' + system)
+        return template[0:extension] + '/' + system
       except:
-        return template[0:extension]
+        return "Directory " + template + '/' + system + " could not be created!"
 
   def __readSource(self, source_file):
     with open(source_file) as f:

@@ -10,7 +10,7 @@ def showOpts():
   print("  createInstance")
   print("  createVars")
   print("  createSG")
-  print("\nusage: generator <option> <file>.yml")
+  print("\nusage: generator <option> <file>.yml <system>")
   sys.exit(1)
 
 def createAll():
@@ -32,15 +32,13 @@ def createSG():
   terraform.writeSG('templates/security_groups.tf')
 
 try: 
-  sys.argv[1]
-  sys.argv[2]
+  option   = sys.argv[1]
+  template = sys.argv[2]
+  system   = sys.argv[3]
 except:
   showOpts()
 
-option   = sys.argv[1]
-template = sys.argv[2]
-
-terraform = terraform_generator(template)
+terraform = terraform_generator(template, system)
 
 for case in switch(option):
   if case("createAll"):
