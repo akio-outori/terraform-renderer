@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import os
+import re
+import sys
 import yaml
 import shutil
 import random
@@ -8,12 +10,14 @@ from jinja2 import Template
 
 class terraform_generator():
 
-  def __init__(self, template, system=''):
-    self.data       = self.__read_yaml(template)
-    self.parent_dir = self.__createDir(template, system)
+  def __init__(self, template, system):
+    self.data                        = self.__read_yaml(template)
+    self.parent_dir                  = self.__createDir(template, system)
+    self.access_key, self.secret_key = self.__getAWSCredentials()
     self.__constructVars()
     self.__constructInstance()
     self.__constructSG()
+    print(self.access_key + " " + self.secret_key)
 
   def __read_yaml(self, template):
     with open(template) as f:
@@ -39,17 +43,36 @@ class terraform_generator():
 
   def __createDir(self, template, system):
     if ".yml" in template:
-      extension = template.find('.yml')
+      extension  = template.find('.yml')
+      parent_dir = template[0:extension] + '/' + system 
       try:
-        os.makedirs(template[0:extension] + '/' + system)
-        return template[0:extension] + '/' + system
+        if not os.path.exists(parent_dir):
+          os.makedirs(parent_dir)
+          
+        return parent_dir
+     
       except:
-        return "Directory " + template + '/' + system + " could not be created!"
+          print("Directory " + parent_dir + " could not be created!")
+          sys.exit(1)
 
   def __readSource(self, source_file):
     with open(source_file) as f:
       content = f.read()
     return content
+
+  def __getAWSCredentials(self):
+    try:
+      with open(os.path.expanduser('~') + '/' + '.aws/credentials') as credfile:
+        for line in credfile:
+          if 'aws_access_key_id' in line:
+            access_key = line[20:].strip()
+          elif 'aws_secret_access_key' in line:
+            secret_key = line[24:].strip()
+    except:
+      print("Could not read credential file!")
+      sys.exit(1)
+    
+    return access_key, secret_key
 
   def writeVars(self, source_file):
     dest_file = self.parent_dir + "/" + os.path.basename(source_file)
@@ -72,7 +95,14 @@ class terraform_generator():
     with open(dest_file, "w+") as f:
       f.write(content.render(name=self.instance_name, prefix=self.prefix, description=self.description, ports=self.ports))
 
+  def writeCredentials(self, source_file):
+    dest_file = self.parent_dir + '/' + os.path.basename(source_file)
+    content   = Template(self.__readSource(source_file))
+
+    with open(dest_file, "w+") as f:
+      f.write(content.render(access_key=self.access_key, secret_key=self.secret_key))
+
   def writeMetaData(self):
     for source in [ "templates/.gitignore", "templates/aws_config.tf" ]:
-      shutil.copy(source, self.parent_dir)    
-
+      shutil.copy(source, self.parent_dir)
+    

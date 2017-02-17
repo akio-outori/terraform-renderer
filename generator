@@ -7,6 +7,7 @@ from includes.terraform_generator import terraform_generator
 def showOpts():
   print("Option not understood:")
   print("  createAll")
+  print("  createCredentials")
   print("  createInstance")
   print("  createVars")
   print("  createSG")
@@ -15,9 +16,14 @@ def showOpts():
 
 def createAll():
   terraform.writeMetaData()
+  terraform.writeCredentials('templates/terraform.tfvars')
   terraform.writeVars('templates/variables.tf')
   terraform.writeInstance('templates/instance.tf')
   terraform.writeSG('templates/security_groups.tf')  
+
+def createCredentials():
+  terraform.writeMetaData()
+  terraform.writeCredentials('templates/terraform.tfvars')
 
 def createVars():
   terraform.writeMetaData()
@@ -43,6 +49,9 @@ terraform = terraform_generator(template, system)
 for case in switch(option):
   if case("createAll"):
     createAll()
+    break
+  if case("createCredentials"):
+    createCredentials()
     break
   if case("createVars"):
     createVars()
