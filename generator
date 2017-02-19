@@ -23,7 +23,7 @@ def createAll():
 
 def createCredentials():
   terraform.writeMetaData()
-  terraform.writeCredentials('templates/terraform.tfvars')
+  terraform.writeCredentials('templates/tfvars.tf')
 
 def createVars():
   terraform.writeMetaData()
