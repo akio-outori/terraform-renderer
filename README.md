@@ -15,9 +15,9 @@ Basic usage is as follows:
 ```./generator <option> <file> <system>```
 
 Where:
-* **option** - equals the action to take, e.g. createAll, createSG, etc
-* **file** - equals the path to a .yml template to use for generation
-* **system** - equals the name of the system to be created.  
+* **option** - The action to take, e.g. createAll, createSG, etc
+* **file** - The path to a .yml template to use for generation
+* **system** - The name of the system to be created.  
 
 Currently supported options are:
 ```
@@ -68,28 +68,28 @@ security_group:
 
 General variables for the variables.tf file.  Currently the following options are supported:
 
-* **region**(required): AWS region
-* **vpc**(required): VPC ID for the region listed
-* **subnet**(required): list of subnets that instances can be launched into.  **The util will choose a random subnet from the list.**
-* **ami**(required): AWS AMI ID to be used
-* **keypair**(required): AWS keypair to be used.  **Note that this keypair should also exist on your local system.**
+* **region** (required): AWS region
+* **vpc** (required): VPC ID for the region listed
+* **subnet** (required): list of subnets.  **The util will choose a random subnet from the list.**
+* **ami** (required): AWS AMI ID to be used
+* **keypair** (required): AWS keypair to be used.  **Note that this keypair should also exist on your local system.**
 
 ### Instance
 
 Instance variables specified in the instance.tf file.  Currently the following options are supported:
 
-* **name**(required): Instance name to be used.  Can be an arbitrary name / string
-* **type**(required): Instance type to be created, see the AWS documentation [here](https://aws.amazon.com/ec2/instance-types/) for a breakdown on possible types.
+* **name** (required): Instance name to be used.  Can be an arbitrary name / string
+* **type** (required): Instance type to be created, see the AWS documentation [here](https://aws.amazon.com/ec2/instance-types/) for a breakdown on possible types.
 
 ### Security Groups
 
 Security group variables specified in security_group.tf.  Currently the following options are supported:
 
-* **prefix**(required): Prefix for the auto-generated security group.  Please see terraform documentation [here](https://www.terraform.io/docs/providers/aws/r/security_group.html) for more info on ```name_prefix```.
-* **description**(required): Description for the security group.  Can be a descriptive string / name.
-* **services**(required): List of services to add to ingress for the security group.  This option can take two forms:
+* **prefix** (required): Prefix for the auto-generated security group.  Please see terraform documentation [here](https://www.terraform.io/docs/providers/aws/r/security_group.html) for more info on ```name_prefix```.
+* **description** (required): Description for the security group.  Can be a descriptive string / name.
+* **services** (required): List of services to add to ingress for the security group.  This option can take two forms:
 
-#### Services open to the world
+#### Services Open to the World
 
 If no ip address restrictions are needed, services can simply be a list of ports to open to 0.0.0.0/0:
 
@@ -101,6 +101,7 @@ services:
   - "80"
   - "443"
 ```
+#### Restricted Services
 
 If more robust SG restrictions are needed, services can be a list of services with *port*, *range*, and *protocol* specified:
 
