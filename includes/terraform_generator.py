@@ -28,6 +28,7 @@ class terraform_generator():
         else:
           print option + " is blank!  Blank options are not supported."
           sys.exit(1)
+    
     except KeyError, Argument:
       print "No value specified for " + category + ":" + Argument[0]
       sys.exit(1)
@@ -39,7 +40,9 @@ class terraform_generator():
     try:
       if not os.path.exists(parent_dir):
         os.makedirs(parent_dir)
-        return parent_dir
+      
+      return parent_dir
+    
     except:
       print("Directory " + parent_dir + " could not be created!")
       sys.exit(1)
@@ -57,6 +60,7 @@ class terraform_generator():
             access_key = line[20:].strip()
           elif 'aws_secret_access_key' in line:
             secret_key = line[24:].strip()
+    
     except:
       print("Could not read credential file!")
       sys.exit(1)
@@ -82,11 +86,11 @@ class terraform_generator():
       f.write(content.render(instance_name=instance_name, instance_type=instance_type))
 
   def writeSG(self, source_file):
-    dest_file, content         = self.__getDestFile(source_file)
-    instance_name              = ''.join(self.__constructVars('instance', 'name'))
-    prefix, description, ports = self.__constructVars('security_group', 'prefix', 'description', 'ports')
+    dest_file, content            = self.__getDestFile(source_file)
+    instance_name                 = ''.join(self.__constructVars('instance', 'name'))
+    prefix, description, services = self.__constructVars('security_group', 'prefix', 'description', 'services')
     with open(dest_file, "w+") as f:
-      f.write(content.render(name=instance_name, prefix=prefix, description=description, ports=ports))
+      f.write(content.render(name=instance_name, prefix=prefix, description=description, services=services))
 
   def writeCredentials(self, source_file):
     dest_file, content     = self.__getDestFile(source_file)
