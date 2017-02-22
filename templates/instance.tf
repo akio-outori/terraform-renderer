@@ -1,8 +1,8 @@
-resource "aws_instance" "{{ instance_name }}" {
+resource "aws_instance" "{{ instance['name'] }}" {
   ami             = "${var.ami}"
-  instance_type   = "{{ instance_type }}"
+  instance_type   = "{{ instance['type'] }}"
   subnet_id       = "${var.aws_subnet}"
-  security_groups = ["${aws_security_group.{{ instance_name }}.id}"]
+  security_groups = ["${aws_security_group.{{ instance['name'] }}.id}"]
   key_name        = "${var.aws_keypair}"
 
   provisioner "remote-exec" {
@@ -13,16 +13,16 @@ resource "aws_instance" "{{ instance_name }}" {
     }
 
     inline = [
-      "sudo echo {{ instance_name }}"
+      "sudo echo {{ instance['name'] }}"
     ]
   }
 
 }
 
-resource "aws_eip" "{{ instance_name }}_ip" {
-  instance = "${aws_instance.{{ instance_name }}.id}"
+resource "aws_eip" "{{ instance['name'] }}_ip" {
+  instance = "${aws_instance.{{ instance['name'] }}.id}"
 }
 
 output "ip" {
-  value = "${aws_eip.{{ instance_name }}_ip.public_ip}"
+  value = "${aws_eip.{{ instance['name'] }}_ip.public_ip}"
 }

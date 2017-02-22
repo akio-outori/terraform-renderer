@@ -1,8 +1,8 @@
-resource "aws_security_group" "{{ name }}" {
-  name_prefix   = "{{ prefix }}"
-  description   = "{{ description }}"
-  {% if services is mapping %} 
-    {% for service in services.itervalues() %} 
+resource "aws_security_group" "{{ instance['name'] }}" {
+  name_prefix   = "{{ security_group['prefix'] }}"
+  description   = "{{ security_group['description'] }}"
+  {% if security_group['services'] is mapping %} 
+    {% for service in security_group['services'].itervalues() %} 
   ingress {
     from_port   = "{{ service['port'] }}"
     to_port     = "{{ service['port'] }}"
@@ -11,7 +11,7 @@ resource "aws_security_group" "{{ name }}" {
   }
     {% endfor %}
   {% else %}     
-    {% for service in services %}
+    {% for service in security_group['services'] %}
   ingress {
     from_port   = "{{ service }}"
     to_port     = "{{ service }}"

@@ -21,11 +21,8 @@ class terraform_generator():
 
   def __constructVars(self, category, *args):
     try:
-      options = []
       for option in args:  
-        if self.data[category][option] is not None:
-          options.append(self.data[category][option])
-        else:
+        if self.data[category][option] is None:
           print option + " is blank!  Blank options are not supported."
           sys.exit(1)
     
@@ -33,7 +30,7 @@ class terraform_generator():
       print "No value specified for " + category + ":" + Argument[0]
       sys.exit(1)
     
-    return options
+    return self.data[category]
       
   def __createDir(self, template, system):
     parent_dir = os.path.dirname(template) + '/' + system 
@@ -73,24 +70,23 @@ class terraform_generator():
     return dest_file, content
 
   def writeVars(self, source_file):
-    dest_file, content                      = self.__getDestFile(source_file) 
-    region, vpc, subnet, ami, keypair, user = self.__constructVars('variables', 'region', 'vpc', 'subnet', 'ami', 'keypair', 'user')
+    dest_file, content = self.__getDestFile(source_file) 
+    variables          = self.__constructVars('variables', 'region', 'vpc', 'subnet', 'ami', 'keypair', 'user')
     with open(dest_file, "w+") as f:
-      f.write(content.render(region=region, vpc=vpc, subnet=random.choice(subnet.values()), ami=ami, keypair=keypair, user=user)) 
+      f.write(content.render(random=random, variables=variables)) 
          
-
   def writeInstance(self, source_file):
-    dest_file, content           = self.__getDestFile(source_file)
-    instance_name, instance_type = self.__constructVars('instance', 'name', 'type')
+    dest_file, content = self.__getDestFile(source_file)
+    instance           = self.__constructVars('instance', 'name', 'type')
     with open(dest_file, "w+") as f:
-      f.write(content.render(instance_name=instance_name, instance_type=instance_type))
+      f.write(content.render(instance=instance))
 
   def writeSG(self, source_file):
-    dest_file, content            = self.__getDestFile(source_file)
-    instance_name                 = ''.join(self.__constructVars('instance', 'name'))
-    prefix, description, services = self.__constructVars('security_group', 'prefix', 'description', 'services')
+    dest_file, content = self.__getDestFile(source_file)
+    instance           = self.__constructVars('instance', 'name')
+    security_group     = self.__constructVars('security_group', 'prefix', 'description', 'services')
     with open(dest_file, "w+") as f:
-      f.write(content.render(name=instance_name, prefix=prefix, description=description, services=services))
+      f.write(content.render(instance=instance, security_group=security_group))
 
   def writeCredentials(self, source_file):
     dest_file, content     = self.__getDestFile(source_file)
