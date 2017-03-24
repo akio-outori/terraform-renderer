@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import random
+import os
 from lib.util.parse_yaml import read as read_yaml
 from lib.util.files import mkdir, cp, read 
 from lib.util.data import validate
@@ -23,7 +24,7 @@ class terraform():
         dest_file, content = read_template(source_file, self.parent_dir)
         instance           = validate(self.template, 'instance', 'name', 'type')
         with open(dest_file, "w+") as f:
-            f.write(content.render(instance=instance))
+            f.write(content.render(os=os, instance=instance))
 
     def writeSG(self, source_file):
         dest_file, content = read_template(source_file, self.parent_dir)

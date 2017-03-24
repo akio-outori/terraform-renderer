@@ -1,13 +1,14 @@
 resource "aws_instance" "{{ instance['name'] }}" {
-  ami             = "${var.ami}"
-  instance_type   = "{{ instance['type'] }}"
-  subnet_id       = "${var.aws_subnet}"
-  security_groups = ["${aws_security_group.{{ instance['name'] }}.id}"]
+  ami                         = "${var.ami}"
+  instance_type               = "{{ instance['type'] }}"
+  subnet_id                   = "${var.aws_subnet}"
+  security_groups             = ["${aws_security_group.{{ instance['name'] }}.id}"]
   {% if instance['associate_public_ip'] == "true" -%}
   associate_public_ip_address = true
   {% endif -%}
-  key_name        = "${var.aws_keypair}"
+  key_name                    = "${var.aws_keypair}"
 
+  {% for file in instance['config_files'] -%}
   provisioner "file" {
     connection {
       user         = "${var.aws_user}"
@@ -18,9 +19,11 @@ resource "aws_instance" "{{ instance['name'] }}" {
       {% endif %}
     }
    
-    source      = "files/{{ instance['config_script']}}"
-    destination = "~/{{ instance['config_script'] }}"
+    source      = "files/{{ file }}"
+    destination = "~/{{ os.path.basename(file) }}"
   }
+
+  {% endfor -%}
   
   provisioner "remote-exec" {
     connection {
@@ -33,8 +36,11 @@ resource "aws_instance" "{{ instance['name'] }}" {
     }
 
     inline = [
+      "echo {{ instance['name'] }}",
+      {% if instance['config_script'] -%}
       "chmod +x ~/{{ instance['config_script'] }}",
       "sudo ~/{{ instance['config_script'] }}"
+      {% endif -%}
     ]
   }
 
