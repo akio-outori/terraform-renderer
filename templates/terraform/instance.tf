@@ -20,7 +20,7 @@ resource "aws_instance" "{{ instance['name'] }}" {
     }
    
     source      = "files/{{ file }}"
-    destination = "~/{{ os.path.basename(file) }}"
+    destination = "{{ instance['config_dir'] }}/{{ os.path.basename(file) }}"
   }
 
   {% endfor -%}
