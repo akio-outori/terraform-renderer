@@ -30,7 +30,7 @@ class terraform():
     def writeSG(self, source_file):
         dest_file, content = read_template(source_file, self.parent_dir)
         instance           = validate(self.template, 'instance', 'name')
-        security_group     = validate(self.template, 'security_group', 'prefix', 'description', 'services')
+        security_group     = validate(self.template, 'security_group', 'prefix', 'services')
         with open(dest_file, "w+") as f:
             f.write(content.render(instance=instance, security_group=security_group))
 

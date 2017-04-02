@@ -22,7 +22,11 @@ def validate(template, category, *args):
                     template[category][option] = default.ami()
                 elif option is 'user':
                     template[category][option] = "ec2-user"
-                    
+                elif option is 'prefix':
+                    template[category][option] = template['instance']['name']
+                elif option is 'services':
+                    template[category][option] = ['22']
+
                 if template[category][option] == None:
                     raise TypeError
             
@@ -30,4 +34,8 @@ def validate(template, category, *args):
                 print "No valid default could be found for " + str(option)
                 sys.exit(1)
             
+        except TypeError:
+            print category + " is not properly defined!"
+            sys.exit(1)
+
     return template[category]
