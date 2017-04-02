@@ -2,6 +2,7 @@
 
 import random
 import os
+import sys
 from lib.util.parse_yaml import read as read_yaml
 from lib.util.files import mkdir, cp, read 
 from lib.util.data import validate
