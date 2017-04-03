@@ -1,50 +1,57 @@
 #!/usr/bin/python
 
 import sys
-from includes.switch import switch
-from includes.terraform_generator import terraform_generator
+from lib.util.switch import switch
+from lib.devops.terraform import terraform
 
 def showOpts():
   print("Option not understood:")
   print("  createAll")
+  print("  createCredentials")
   print("  createInstance")
   print("  createVars")
   print("  createSG")
-  print("\nusage: generator <option> <file>.yml")
+  print("\nusage: generator <option> <file>.yml <system>")
   sys.exit(1)
 
 def createAll():
   terraform.writeMetaData()
-  terraform.writeVars('templates/variables.tf')
-  terraform.writeInstance('templates/instance.tf')
-  terraform.writeSG('templates/security_groups.tf')  
+  terraform.writeCredentials('templates/terraform/terraform.tfvars')
+  terraform.writeVars('templates/terraform/variables.tf')
+  terraform.writeInstance('templates/terraform/instance.tf')
+  terraform.writeSG('templates/terraform/security_groups.tf')  
+
+def createCredentials():
+  terraform.writeMetaData()
+  terraform.writeCredentials('templates/terraform/tfvars.tf')
 
 def createVars():
   terraform.writeMetaData()
-  terraform.writeVars('templates/variables.tf')
+  terraform.writeVars('templates/terraform/variables.tf')
   
 def createInstance():
   terraform.writeMetaData()
-  terraform.writeInstance('templates/instance.tf')
+  terraform.writeInstance('templates/terraform/instance.tf')
 
 def createSG():
   terraform.writeMetaData()
-  terraform.writeSG('templates/security_groups.tf')
+  terraform.writeSG('templates/terraform/security_groups.tf')
 
 try: 
-  sys.argv[1]
-  sys.argv[2]
+  option   = sys.argv[1]
+  template = sys.argv[2]
+  system   = sys.argv[3]
 except:
   showOpts()
 
-option   = sys.argv[1]
-template = sys.argv[2]
-
-terraform = terraform_generator(template)
+terraform = terraform(template, system)
 
 for case in switch(option):
   if case("createAll"):
     createAll()
+    break
+  if case("createCredentials"):
+    createCredentials()
     break
   if case("createVars"):
     createVars()
