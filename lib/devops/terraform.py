@@ -17,15 +17,15 @@ class terraform():
 
     def writeVars(self, source_file):
         dest_file, content = read_template(source_file, self.parent_dir) 
-        variables          = validate(self.template, 'variables', 'region', 'vpc', 'subnet', 'ami', 'keypair', 'user')
+        variables          = validate(self.template, 'variables', 'region')
         with open(dest_file, "w+") as f:
-            f.write(content.render(random=random, variables=variables)) 
+            f.write(content.render(variables=variables)) 
             
     def writeInstance(self, source_file):
         dest_file, content = read_template(source_file, self.parent_dir)
-        instance           = validate(self.template, 'instance', 'name', 'type')
+        instance           = validate(self.template, 'instance', 'name', 'type', 'vpc', 'subnet', 'ami', 'keypair', 'user')
         with open(dest_file, "w+") as f:
-            f.write(content.render(os=os, instance=instance))
+            f.write(content.render(os=os, random=random, instance=instance))
 
     def writeSG(self, source_file):
         dest_file, content = read_template(source_file, self.parent_dir)

@@ -27,6 +27,6 @@ resource "aws_security_group" "{{ instance['name'] }}" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  vpc_id = "${var.aws_vpc}"
+  vpc_id = "{{ instance['vpc'] }}"
 }
 

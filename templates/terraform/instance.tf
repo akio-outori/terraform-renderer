@@ -1,12 +1,12 @@
 resource "aws_instance" "{{ instance['name'] }}" {
-  ami                         = "${var.ami}"
+  ami                         = "{{ instance['ami'] }}"
   instance_type               = "{{ instance['type'] }}"
-  subnet_id                   = "${var.aws_subnet}"
+  subnet_id                   = "{{ random.choice(instance['subnet'].values()) }}"
   security_groups             = ["${aws_security_group.{{ instance['name'] }}.id}"]
   {% if instance['associate_public_ip'] == "true" -%}
   associate_public_ip_address = true
   {% endif -%}
-  key_name                    = "${var.aws_keypair}"
+  key_name                    = "{{ instance['keypair'] }}"
 
   {% for file in instance['config_files'] -%}
   provisioner "file" {
@@ -15,7 +15,7 @@ resource "aws_instance" "{{ instance['name'] }}" {
       agent        = true
       {% if instance['bastion_host'] -%}
       bastion_host = "{{ instance['bastion_host'] }}"
-      bastion_user = "${var.aws_user}"
+      bastion_user = "{{ instance['bastion_user'] }}"
       {% endif %}
     }
    
@@ -27,19 +27,19 @@ resource "aws_instance" "{{ instance['name'] }}" {
   
   provisioner "remote-exec" {
     connection {
-      user         = "${var.aws_user}"
+      user         = "{{ instance['ssh_user'] }}"
       agent        = true
       {% if instance['bastion_host'] -%}
       bastion_host = "{{ instance['bastion_host'] }}"
-      bastion_user = "${var.aws_user}"
+      bastion_user = "{{ instance['bastion_user'] }}"
       {% endif %}
     }
 
     inline = [
       "echo {{ instance['name'] }}",
       {% if instance['config_script'] -%}
-      "chmod +x ~/{{ instance['config_script'] }}",
-      "sudo ~/{{ instance['config_script'] }}"
+      "chmod +x {{ instance['config_script'] }}",
+      "sudo {{ instance['config_script'] }}"
       {% endif -%}
     ]
   }
