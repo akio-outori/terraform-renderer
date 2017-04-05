@@ -11,7 +11,7 @@ resource "aws_instance" "{{ instance['name'] }}" {
   {% for file in instance['config_files'] -%}
   provisioner "file" {
     connection {
-      user         = "${var.aws_user}"
+      user         = "{{ instance['ssh_user'] }}"
       agent        = true
       {% if instance['bastion_host'] -%}
       bastion_host = "{{ instance['bastion_host'] }}"

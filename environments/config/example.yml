@@ -4,20 +4,20 @@ variables:
   region: "us-east-1"
 
 instance:
-  name: "selfoss-test"
+  name: "test"
   type: "t2.micro"
-  vpc: "vpc-628dae06"
+  vpc: ""
   subnet: 
-    east-1a: "subnet-3525fe1f" 
-    east-1b: "subnet-3832b84e"
-    east-1c: "subnet-a71fb2ff"
-    east-1d: "subnet-9ab7dfa7"
+    east-1a: "" 
+    east-1b: ""
+    east-1c: ""
+    east-1d: ""
   ami: "ami-1c221e76"
-  user: "centos"
-  keypair: "jeffhallyburton-east-1"
+  ssh_user: "centos"
+  keypair: ""
 
 security_group:
-  prefix: "yaml-test"
+  prefix: "test"
   description: "test sg for terraform auto-generation"
   services:
     - "22"
