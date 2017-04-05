@@ -15,7 +15,8 @@ def mkdir(path):
         sys.exit(1)
 
 def cp(source, dest):
-    shutil.copy(source, dest)
+    if not os.path.isfile(dest + '/' + os.path.basename(source)):
+        shutil.copy(source, dest)
 
 def read(source_file):
     with open(source_file) as f:
