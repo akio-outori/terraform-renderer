@@ -1,0 +1,4 @@
+---
+
+terraform_dir: "environments/plan"
+configuration_dir: "environments/config"

@@ -17,7 +17,7 @@ def validate(template, category, *args):
                 if option is 'vpc':
                     template[category][option] = default.vpc()
                 elif option is 'subnet':
-                    template[category][option] = default.subnet(template['variables']['vpc'])
+                    template[category][option] = default.subnet(template['instance']['vpc'])
                 elif option is 'ami':
                     template[category][option] = default.ami()
                 elif option is 'user':

@@ -11,9 +11,20 @@ from lib.util.aws import getCredentials
 
 class terraform():
     
-    def __init__(self, template, system):
+    def __init__(self, template):
         self.template   = read_yaml(template)
-        self.parent_dir = mkdir(template, system)        
+        self.parent_dir = self.__makeEnv('config.yml', template)        
+
+    def __makeEnv(self, config, template):
+        config        = read_yaml(config)
+        template_path = os.path.splitext(os.path.basename(template))[0]
+        for option, path in config.iteritems():
+            mkdir(path) 
+
+        cp(template, config['configuration_dir']) 
+
+        return mkdir(config['terraform_dir'] + '/' + template_path)
+
 
     def writeVars(self, source_file):
         dest_file, content = read_template(source_file, self.parent_dir) 
