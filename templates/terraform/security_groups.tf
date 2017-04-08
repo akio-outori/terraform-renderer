@@ -1,5 +1,5 @@
 {% for security_group in security_groups -%}
-resource "aws_security_group" "{{ security_group['prefix'] }}" {
+resource "aws_security_group" "{{ security_group['name'] }}" {
   {% if security_group['prefix'] is defined -%}
   name_prefix   = "{{ security_group['prefix'] }}"
   {% else -%}
@@ -32,6 +32,6 @@ resource "aws_security_group" "{{ security_group['prefix'] }}" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  vpc_id = "{{ security_group['vpc'] }}"
+  vpc_id = "{{ variables['vpc'] }}"
 }
 {% endfor -%}

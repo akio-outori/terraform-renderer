@@ -13,27 +13,28 @@ def validate(template, category, *args):
                         sys.exit(1)
 
                 except KeyError, Argument:
-                    default = ec2_defaults(template['variables']['region'])
-                    
-                    if option is 'vpc':
-                        item[option] = default.vpc()
-                    elif option is 'subnet':
-                        item[option] = default.subnet(template['instance']['vpc'])
-                    elif option is 'ami':
-                        item[option] = default.ami()
-                    elif option is 'user':
-                        item[option] = "ec2-user"
-                    elif option is 'prefix':
-                        item[option] = template['instance']['name']
-                    elif option is 'services':
-                        item[option] = ['22']
+                    try:
+                        default = ec2_defaults(template['variables']['region'])
                         
-                    if item[option] == None:
-                        raise TypeError
+                        if   category is 'variables' and option is 'vpc':
+                            item[option] = default.vpc()
+                        elif category is 'instances' and option is 'subnet':
+                            item[option] = default.subnet(template['variables']['vpc'])
+                        elif category is 'instances' and option is 'ami':
+                            item[option] = default.ami()
+                        elif category is 'instances' and option is 'user':
+                            item[option] = "ec2-user"
+                        elif category is 'security_groups' and option is 'name':
+                            item['name'] = 'default_sg'
+                        elif category is 'security_groups' and option is 'services':
+                            item[option] = ['22']
+                        
+                        if item[option] == None:
+                            raise TypeError
                     
-                except TypeError:
-                    print "No valid default could be found for " + str(option)
-                    sys.exit(1)
+                    except TypeError:
+                        print "No valid default could be found for " + str(option)
+                        sys.exit(1)
 
 
     else:

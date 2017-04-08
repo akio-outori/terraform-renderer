@@ -30,24 +30,26 @@ class terraform():
     def writeVars(self, source_file):
         content    = read_template(source_file)
         dest_file  = self.__makeDestFile(source_file)
-        variables  = validate(self.template[0], 'variables', 'region')
+        variables  = validate(self.template[0], 'variables', 'region', 'vpc')
         with open(dest_file, "w+") as f:
             f.write(content.render(variables=variables)) 
             
     def writeInstance(self, source_file):
         content    = read_template(source_file)
-        instances  = validate(self.template[0], 'instances', 'name', 'type', 'vpc', 'subnet', 'ami', 'keypair', 'user')
+        instances  = validate(self.template[0], 'instances', 'name', 'type', 'subnet', 'ami', 'keypair', 'user')
+        variables  = validate(self.template[0], 'variables')
         for instance in instances:
             dest_file  = self.__makeDestFile(instance['name'] + '.tf')
             with open(dest_file, "w+") as f:
-                f.write(content.render(os=os, random=random, instance=instance))
+                f.write(content.render(os=os, random=random, instance=instance, variables=variables))
 
     def writeSG(self, source_file):
         content         = read_template(source_file)
         dest_file       = self.__makeDestFile(source_file)
-        security_groups = validate(self.template[0], 'security_groups', 'prefix', 'services')
+        security_groups = validate(self.template[0], 'security_groups', 'name', 'services')
+        variables  = validate(self.template[0], 'variables', 'vpc')
         with open(dest_file, "w+") as f:
-            f.write(content.render(security_groups=security_groups))
+            f.write(content.render(security_groups=security_groups, variables=variables))
 
     def writeCredentials(self, source_file):
         content                = read_template(source_file)

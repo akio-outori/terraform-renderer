@@ -2,7 +2,7 @@ resource "aws_instance" "{{ instance['name'] }}" {
   ami                         = "{{ instance['ami'] }}"
   instance_type               = "{{ instance['type'] }}"
   subnet_id                   = "{{ random.choice(instance['subnet'].values()) }}"
-  security_groups             = ["${aws_security_group.{{ instance['security_group_name'] }}.id}"]
+  security_groups             = ["${aws_security_group.{{ instance['security_group'] }}.id}"]
   {% if instance['associate_public_ip'] == "true" -%}
   associate_public_ip_address = true
   {% endif -%}
@@ -13,9 +13,9 @@ resource "aws_instance" "{{ instance['name'] }}" {
     connection {
       user         = "{{ instance['user'] }}"
       agent        = true
-      {% if instance['bastion_host'] -%}
-      bastion_host = "{{ instance['bastion_host'] }}"
-      bastion_user = "{{ instance['bastion_user'] }}"
+      {% if variables['bastion_host'] -%}
+      bastion_host = "{{ variables['bastion_host'] }}"
+      bastion_user = "{{ variables['bastion_user'] }}"
       {% endif %}
     }
    
@@ -29,9 +29,9 @@ resource "aws_instance" "{{ instance['name'] }}" {
     connection {
       user         = "{{ instance['user'] }}"
       agent        = true
-      {% if instance['bastion_host'] -%}
-      bastion_host = "{{ instance['bastion_host'] }}"
-      bastion_user = "{{ instance['bastion_user'] }}"
+      {% if variables['bastion_host'] -%}
+      bastion_host = "{{ variables['bastion_host'] }}"
+      bastion_user = "{{ variables['bastion_user'] }}"
       {% endif %}
     }
 
