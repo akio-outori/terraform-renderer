@@ -1,6 +1,7 @@
 ---
 
 - environment: "production"
+
   variables:
           region: "us-east-1"
 
@@ -27,6 +28,7 @@
       security_group_name: "test"
 
   security_groups:
+
     - name: "test"
       prefix: "test"
       vpc: "vpc-80aee2e7"
