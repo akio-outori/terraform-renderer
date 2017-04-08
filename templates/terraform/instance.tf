@@ -2,7 +2,7 @@ resource "aws_instance" "{{ instance['name'] }}" {
   ami                         = "{{ instance['ami'] }}"
   instance_type               = "{{ instance['type'] }}"
   subnet_id                   = "{{ random.choice(instance['subnet'].values()) }}"
-  security_groups             = ["${aws_security_group.{{ instance['name'] }}.id}"]
+  security_groups             = ["${aws_security_group.{{ instance['security_group_name'] }}.id}"]
   {% if instance['associate_public_ip'] == "true" -%}
   associate_public_ip_address = true
   {% endif -%}
@@ -11,7 +11,7 @@ resource "aws_instance" "{{ instance['name'] }}" {
   {% for file in instance['config_files'] -%}
   provisioner "file" {
     connection {
-      user         = "{{ instance['ssh_user'] }}"
+      user         = "{{ instance['user'] }}"
       agent        = true
       {% if instance['bastion_host'] -%}
       bastion_host = "{{ instance['bastion_host'] }}"
@@ -27,7 +27,7 @@ resource "aws_instance" "{{ instance['name'] }}" {
   
   provisioner "remote-exec" {
     connection {
-      user         = "{{ instance['ssh_user'] }}"
+      user         = "{{ instance['user'] }}"
       agent        = true
       {% if instance['bastion_host'] -%}
       bastion_host = "{{ instance['bastion_host'] }}"
@@ -51,11 +51,11 @@ resource "aws_eip" "{{ instance['name'] }}_ip" {
   vpc      = true
 }
 
-output "public_ip" {
+output "{{ instance['name'] }}_public_ip" {
   value = "${aws_eip.{{ instance['name'] }}_ip.public_ip}"
 }
 
-output "private_ip" {
+output "{{ instance['name'] }}_private_ip" {
   value = "${aws_instance.{{ instance['name'] }}.private_ip}"
 }
 

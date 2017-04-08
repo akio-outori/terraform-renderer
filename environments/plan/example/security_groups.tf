@@ -1,5 +1,5 @@
-resource "aws_security_group" "selfoss-test" {
-  name_prefix   = "yaml-test"
+resource "aws_security_group" "test" {
+  name_prefix   = "test"
   description   = "test sg for terraform auto-generation"
        
     
@@ -24,7 +24,6 @@ resource "aws_security_group" "selfoss-test" {
     cidr_blocks = ["0.0.0.0/0"]
   }
     
-  
   egress {
     from_port   = "0"
     to_port     = "0"
@@ -32,5 +31,5 @@ resource "aws_security_group" "selfoss-test" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  vpc_id = "vpc-628dae06"
+  vpc_id = "test"
 }

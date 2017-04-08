@@ -1,25 +1,37 @@
 ---
 
-variables:
-  region: "us-east-1"
+- environment: "production"
+  variables:
+          region: "us-east-1"
 
-instance:
-  name: "test"
-  type: "t2.micro"
-  vpc: ""
-  subnet: 
-    east-1a: "" 
-    east-1b: ""
-    east-1c: ""
-    east-1d: ""
-  ami: "ami-1c221e76"
-  ssh_user: "centos"
-  keypair: ""
+  instances:
+    
+    - name: "test"
+      type: "t2.micro"
+      vpc: "vpc-80aee2e7"
+      subnet:
+        east-1e: "subnet-c0f402ed"
+      ami: "ami-1c221e76"
+      user: "centos"
+      keypair: "axis"
+      security_group_name: "test"
 
-security_group:
-  prefix: "test"
-  description: "test sg for terraform auto-generation"
-  services:
-    - "22"
-    - "80"
-    - "443"
+    - name: "test2"
+      type: "t2.micro"
+      vpc: "vpc-80aee2e7"
+      subnet:
+        east-1e: "subnet-c0f402ed"
+      ami: "ami-1c221e76"
+      user: "centos"
+      keypair: "axis"
+      security_group_name: "test"
+
+  security_groups:
+    - name: "test"
+      prefix: "test"
+      vpc: "vpc-80aee2e7"
+      description: "test sg for terraform auto-generation"
+      services:
+        - "22"
+        - "80"
+        - "443"
