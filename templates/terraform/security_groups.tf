@@ -1,8 +1,13 @@
-resource "aws_security_group" "{{ instance['name'] }}" {
+{% for security_group in security_groups -%}
+resource "aws_security_group" "{{ security_group['name'] }}" {
+  {% if security_group['prefix'] is defined -%}
   name_prefix   = "{{ security_group['prefix'] }}"
+  {% else -%}
+  name          = "{{ security_group['name'] }}"
+  {% endif -%}
   description   = "{{ security_group['description'] }}"
-  {% if security_group['services'] is mapping %} 
-    {% for service in security_group['services'].itervalues() %} 
+  {% if security_group['services'] is mapping -%} 
+    {% for service in security_group['services'].itervalues() -%} 
   ingress {
     from_port   = "{{ service['port'] }}"
     to_port     = "{{ service['port'] }}"
@@ -19,7 +24,7 @@ resource "aws_security_group" "{{ instance['name'] }}" {
     cidr_blocks = ["0.0.0.0/0"]
   }
     {% endfor %}
-  {% endif %}
+  {% endif -%}
   egress {
     from_port   = "0"
     to_port     = "0"
@@ -27,6 +32,6 @@ resource "aws_security_group" "{{ instance['name'] }}" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  vpc_id = "${var.aws_vpc}"
+  vpc_id = "{{ variables['vpc'] }}"
 }
-
+{% endfor -%}

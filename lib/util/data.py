@@ -4,38 +4,50 @@ from os import sys
 from lib.aws.ec2_defaults import ec2_defaults
 
 def validate(template, category, *args):
-    for option in args:
-        try:
-            if template[category][option] is None:
-                print option + " is blank!  Blank options are not supported."
-                sys.exit(1)
-        
-        except KeyError, Argument:
-            try:
-                default = ec2_defaults(template['variables']['region'])
-                
-                if option is 'vpc':
-                    template[category][option] = default.vpc()
-                elif option is 'subnet':
-                    template[category][option] = default.subnet(template['variables']['vpc'])
-                elif option is 'ami':
-                    template[category][option] = default.ami()
-                elif option is 'user':
-                    template[category][option] = "ec2-user"
-                elif option is 'prefix':
-                    template[category][option] = template['instance']['name']
-                elif option is 'services':
-                    template[category][option] = ['22']
+    if isinstance(template[category], list):
+        for item in template[category]:
+            for option in args:
+                try:
+                    if item[option] is None:
+                        print option + " is blank!  Blank options are not supported."
+                        sys.exit(1)
 
-                if template[category][option] == None:
-                    raise TypeError
-            
-            except TypeError:
-                print "No valid default could be found for " + str(option)
+                except KeyError, Argument:
+                    try:
+                        default = ec2_defaults(template['variables']['region'])
+                        
+                        if   category is 'variables' and option is 'vpc':
+                            item[option] = default.vpc()
+                        elif category is 'instances' and option is 'subnet':
+                            item[option] = default.subnet(template['variables']['vpc'])
+                        elif category is 'instances' and option is 'ami':
+                            item[option] = default.ami()
+                        elif category is 'instances' and option is 'user':
+                            item[option] = "ec2-user"
+                        elif category is 'security_groups' and option is 'name':
+                            item['name'] = 'default_sg'
+                        elif category is 'security_groups' and option is 'services':
+                            item[option] = ['22']
+                        
+                        if item[option] == None:
+                            raise TypeError
+                    
+                    except TypeError:
+                        print "No valid default could be found for " + str(option)
+                        sys.exit(1)
+
+
+    else:
+        for option in args:
+            try:
+                if template[category][option] is None:
+                    print option + " is blank!  Blank options are not supported."
+                    sys.exit(1)
+
+            except KeyError, Argument:
+                print "No valid option could be found for " + str(option)
                 sys.exit(1)
-            
-        except TypeError:
-            print category + " is not properly defined!"
-            sys.exit(1)
 
     return template[category]
+
+

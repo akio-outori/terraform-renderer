@@ -3,20 +3,20 @@
 import os
 import shutil
 
-def mkdir(template, system):
+def mkdir(path):
     try:
-        parent_dir = os.path.dirname(template) + '/' + system
-        if not os.path.exists(parent_dir):
-            os.makedirs(parent_dir)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        return path
                 
     except:
-        print("Directory " + parent_dir + " could not be created!")
+        print("Directory " + path + " could not be created!")
         sys.exit(1)
 
-    return parent_dir
-
-def cp(source, parent_dir):
-    shutil.copy(source, parent_dir)
+def cp(source, dest):
+    if not os.path.isfile(dest + '/' + os.path.basename(source)):
+        shutil.copy(source, dest)
 
 def read(source_file):
     with open(source_file) as f:

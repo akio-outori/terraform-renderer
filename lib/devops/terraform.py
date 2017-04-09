@@ -11,31 +11,49 @@ from lib.util.aws import getCredentials
 
 class terraform():
     
-    def __init__(self, template, system):
+    def __init__(self, template):
         self.template   = read_yaml(template)
-        self.parent_dir = mkdir(template, system)        
+        self.parent_dir = self.__makeEnv('config.yml', template)        
+
+    def __makeEnv(self, config, template):
+        config        = read_yaml(config)
+        template_path = os.path.splitext(os.path.basename(template))[0]
+        for option, path in config.iteritems():
+            mkdir(path) 
+
+        cp(template, config['configuration_dir']) 
+        return mkdir(config['terraform_dir'] + '/' + template_path)
+
+    def __makeDestFile(self, source_file):
+        return self.parent_dir + '/' + os.path.basename(source_file)
 
     def writeVars(self, source_file):
-        dest_file, content = read_template(source_file, self.parent_dir) 
-        variables          = validate(self.template, 'variables', 'region', 'vpc', 'subnet', 'ami', 'keypair', 'user')
+        content    = read_template(source_file)
+        dest_file  = self.__makeDestFile(source_file)
+        variables  = validate(self.template[0], 'variables', 'region', 'vpc')
         with open(dest_file, "w+") as f:
-            f.write(content.render(random=random, variables=variables)) 
+            f.write(content.render(variables=variables)) 
             
     def writeInstance(self, source_file):
-        dest_file, content = read_template(source_file, self.parent_dir)
-        instance           = validate(self.template, 'instance', 'name', 'type')
-        with open(dest_file, "w+") as f:
-            f.write(content.render(os=os, instance=instance))
+        content    = read_template(source_file)
+        instances  = validate(self.template[0], 'instances', 'name', 'type', 'subnet', 'ami', 'keypair', 'user')
+        variables  = validate(self.template[0], 'variables')
+        for instance in instances:
+            dest_file  = self.__makeDestFile(instance['name'] + '.tf')
+            with open(dest_file, "w+") as f:
+                f.write(content.render(os=os, random=random, instance=instance, variables=variables))
 
     def writeSG(self, source_file):
-        dest_file, content = read_template(source_file, self.parent_dir)
-        instance           = validate(self.template, 'instance', 'name')
-        security_group     = validate(self.template, 'security_group', 'prefix', 'services')
+        content         = read_template(source_file)
+        dest_file       = self.__makeDestFile(source_file)
+        security_groups = validate(self.template[0], 'security_groups', 'name', 'services')
+        variables  = validate(self.template[0], 'variables', 'vpc')
         with open(dest_file, "w+") as f:
-            f.write(content.render(instance=instance, security_group=security_group))
+            f.write(content.render(security_groups=security_groups, variables=variables))
 
     def writeCredentials(self, source_file):
-        dest_file, content     = read_template(source_file, self.parent_dir)
+        content                = read_template(source_file)
+        dest_file              = self.__makeDestFile(source_file)
         access_key, secret_key = getCredentials()
         with open(dest_file, "w+") as f:
             f.write(content.render(access_key=access_key, secret_key=secret_key))
