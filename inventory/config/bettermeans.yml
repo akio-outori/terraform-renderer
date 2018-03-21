@@ -1,0 +1,23 @@
+---
+
+- config:
+
+    name: "bettermeans"
+    class: "instance"
+    
+    credentials:
+      credential_file: "~/.aws/personal"
+      profile: "default"
+
+    environment: 
+      name: "default"
+      region : "us-east-1"
+      vpc: "vpc-628dae06"
+      subnet: "subnet-9ab7dfa7"
+    
+    instance:
+      instance_type: "t2.medium"
+      ami: "ami-1853ac65"
+      keypair: "personal"
+      user: "ec2-user"
+
