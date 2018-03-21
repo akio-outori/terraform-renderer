@@ -21,3 +21,5 @@
       keypair: "personal"
       user: "ec2-user"
 
+    configuration:
+      script: "inventory/config/bettermeans.sh" 

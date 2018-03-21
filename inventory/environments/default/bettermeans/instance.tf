@@ -12,10 +12,8 @@ resource "aws_instance" "bettermeans" {
       private_key = "${file("~/.ssh/${var.aws_keypair}")}"
     }
 
-    inline = [
-    ]
-  }
-
+    script = "bettermeans.sh"
+    }
 }
 
 resource "aws_eip" "bettermeans-ip" {

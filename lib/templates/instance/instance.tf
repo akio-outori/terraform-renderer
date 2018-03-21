@@ -12,10 +12,10 @@ resource "aws_instance" "{{ variables['name'] }}" {
       private_key = "${file("~/.ssh/${var.aws_keypair}")}"
     }
 
-    inline = [
-    ]
+    {% if variables['configuration']['script'] -%}
+    script = "{{ variables['configuration']['script'] }}"
+    {% endif -%}
   }
-
 }
 
 resource "aws_eip" "{{ variables['name'] }}-ip" {

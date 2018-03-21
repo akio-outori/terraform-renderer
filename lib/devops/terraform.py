@@ -23,8 +23,15 @@ class terraform():
     self.templates = os.listdir('lib/templates' + '/' + self.variables['class'])
     self.templates = [ os.path.abspath('lib/templates' + '/' + self.variables['class']) + '/' + template for template in self.templates ]
 
+  def __copyScripts(self):
+    if self.variables['configuration']['script']:
+      cp(self.variables['configuration']['script'], self.env)
+      self.variables['configuration']['script'] = os.path.basename(self.variables['configuration']['script'])
+
   def write(self):
     mkdir(self.env)
+    self.__copyScripts()
+
     for template in self.templates:
       content   = read_template(template)
       dest_file = self.env + '/' + os.path.basename(template)
