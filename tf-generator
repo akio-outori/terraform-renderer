@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+import sys
+from lib.util.switch import switch
+from lib.devops.terraform import terraform
+
+def showOpts():
+  print("Option not understood:")
+  print("  create")
+  print("\nusage: tf-generator <option> <file>.yml")
+  sys.exit(1)
+
+def create():
+  terraform.write()
+
+try: 
+  option   = sys.argv[1]
+  template = sys.argv[2]
+except:
+  showOpts()
+
+terraform = terraform(template)
+
+for case in switch(option):
+  if case("create"):
+    create()
+    break
+  if case():
+    showOpts()
+    break

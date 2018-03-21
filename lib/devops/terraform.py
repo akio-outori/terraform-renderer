@@ -4,61 +4,36 @@ import random
 import os
 import sys
 from lib.util.parse_yaml import read as read_yaml
-from lib.util.files import mkdir, cp, read 
-from lib.util.data import validate
-from lib.util.template import read as read_template
-from lib.util.aws import getCredentials
+from lib.util.files import mkdir, cp, read
+from lib.util.template import read as read_template 
 
 class terraform():
     
-    def __init__(self, template):
-        self.template   = read_yaml(template)
-        self.parent_dir = self.__makeEnv('config.yml', template)        
+  def __init__(self, template):
+    self.template   = read_yaml(template)
+    self.variables  = self.template[0]['config']
 
-    def __makeEnv(self, config, template):
-        config        = read_yaml(config)
-        template_path = os.path.splitext(os.path.basename(template))[0]
-        for option, path in config.iteritems():
-            mkdir(path) 
+    self.__setEnv()
+    self.__getTemplates()
 
-        cp(template, config['configuration_dir']) 
-        return mkdir(config['terraform_dir'] + '/' + template_path)
+  def __setEnv(self):
+    self.env = 'inventory/environments/' + self.variables['environment']['name'] + '/' + self.variables['name']
 
-    def __makeDestFile(self, source_file):
-        return self.parent_dir + '/' + os.path.basename(source_file)
+  def __getTemplates(self):
+    self.templates = os.listdir('lib/templates' + '/' + self.variables['class'])
+    self.templates = [ os.path.abspath('lib/templates' + '/' + self.variables['class']) + '/' + template for template in self.templates ]
 
-    def writeVars(self, source_file):
-        content    = read_template(source_file)
-        dest_file  = self.__makeDestFile(source_file)
-        variables  = validate(self.template[0], 'variables', 'region', 'vpc')
-        with open(dest_file, "w+") as f:
-            f.write(content.render(variables=variables)) 
-            
-    def writeInstance(self, source_file):
-        content    = read_template(source_file)
-        instances  = validate(self.template[0], 'instances', 'name', 'type', 'subnet', 'ami', 'keypair', 'user')
-        variables  = validate(self.template[0], 'variables')
-        for instance in instances:
-            dest_file  = self.__makeDestFile(instance['name'] + '.tf')
-            with open(dest_file, "w+") as f:
-                f.write(content.render(os=os, random=random, instance=instance, variables=variables))
+  def __copyScripts(self):
+    if self.variables['configuration']['script']:
+      cp(self.variables['configuration']['script'], self.env)
+      self.variables['configuration']['script'] = os.path.basename(self.variables['configuration']['script'])
 
-    def writeSG(self, source_file):
-        content         = read_template(source_file)
-        dest_file       = self.__makeDestFile(source_file)
-        security_groups = validate(self.template[0], 'security_groups', 'name', 'services')
-        variables  = validate(self.template[0], 'variables', 'vpc')
-        with open(dest_file, "w+") as f:
-            f.write(content.render(security_groups=security_groups, variables=variables))
+  def write(self):
+    mkdir(self.env)
+    self.__copyScripts()
 
-    def writeCredentials(self, source_file):
-        content                = read_template(source_file)
-        dest_file              = self.__makeDestFile(source_file)
-        access_key, secret_key = getCredentials()
-        with open(dest_file, "w+") as f:
-            f.write(content.render(access_key=access_key, secret_key=secret_key))
-
-    def writeMetaData(self):
-        for source in [ "templates/terraform/.gitignore", "templates/terraform/aws_config.tf" ]:
-            cp(source, self.parent_dir)
-    
+    for template in self.templates:
+      content   = read_template(template)
+      dest_file = self.env + '/' + os.path.basename(template)
+      with open(dest_file, 'w') as f:
+        f.write(content.render(variables=self.variables)) 
